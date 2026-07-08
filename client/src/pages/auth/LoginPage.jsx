@@ -1,25 +1,48 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
+  const justVerified = location.state?.verified;
+
   const [form, setForm] = useState({ emailOrPhone: '', password: '' });
   const [errors, setErrors] = useState({});
   const [remember, setRemember] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   const update = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setServerError('');
     const err = {};
     if (!form.emailOrPhone) err.emailOrPhone = 'Enter your email or phone';
     if (!form.password) err.password = 'Enter your password';
     setErrors(err);
     if (Object.keys(err).length > 0) return;
-    navigate('/dashboard');
+
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/login', {
+        emailOrPhone: form.emailOrPhone,
+        password: form.password,
+      });
+      login(data.token, data.user);
+      navigate('/dashboard');
+    } catch (err) {
+      setServerError(err.response?.data?.message || 'Login failed. Try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,6 +58,16 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 p-8 space-y-4">
+          {justVerified && (
+            <div className="bg-primary-50 text-primary-dark text-sm rounded-xl p-3">
+              Account verified. Please log in.
+            </div>
+          )}
+
+          {serverError && (
+            <div className="bg-red-50 text-red-700 text-sm rounded-xl p-3">{serverError}</div>
+          )}
+
           <Input label="Email or Phone" placeholder="you@example.com"
             value={form.emailOrPhone} onChange={update('emailOrPhone')} error={errors.emailOrPhone} />
 
@@ -54,7 +87,7 @@ export default function LoginPage() {
           </div>
 
           <Button variant="primary" size="lg" iconRight={ArrowRight}
-            className="w-full" onClick={handleSubmit}>
+            className="w-full" loading={loading} onClick={handleSubmit}>
             Log In
           </Button>
 
