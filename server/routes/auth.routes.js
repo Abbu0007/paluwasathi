@@ -1,0 +1,15 @@
+const router = require('express').Router();
+const auth = require('../middleware/auth');
+const {
+  register,
+  verifyOtp,
+  login,
+  getMe,
+} = require('../controllers/auth.controller');
+
+router.post('/register', register);
+router.post('/verify-otp', verifyOtp);
+router.post('/login', login);
+router.get('/me', auth, getMe);
+
+module.exports = router;
