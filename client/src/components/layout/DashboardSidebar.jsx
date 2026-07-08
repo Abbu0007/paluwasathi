@@ -18,7 +18,7 @@ const NAV = [
 export default function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -27,7 +27,7 @@ export default function DashboardSidebar() {
 
   return (
     <aside className="w-[260px] bg-white border-r border-gray-100 min-h-screen flex flex-col fixed left-0 top-0">
-      <Link to="/" className="flex items-center gap-2 px-6 h-[72px] border-b border-gray-100">
+      <Link to="/dashboard" className="flex items-center gap-2 px-6 h-[72px] border-b border-gray-100">
         <img src="/logo.png" alt="PaluwaSathi" className="h-8 w-auto" />
         <span className="text-lg font-black text-ink">PaluwaSathi</span>
       </Link>
