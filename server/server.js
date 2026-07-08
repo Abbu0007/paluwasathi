@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 
 dotenv.config();
+
 const connectDB = require('./config/db');
 connectDB();
 
@@ -18,16 +19,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    message: 'PaluwaSathi API running',
-    timestamp: new Date() 
-  });
+  res.json({ status: 'ok', message: 'PaluwaSathi API running', timestamp: new Date() });
 });
 
-app.get('/api', (req, res) => {
-  res.json({ message: 'Welcome to PaluwaSathi API' });
-});
+app.use('/api/auth', require('./routes/auth.routes'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -39,5 +34,4 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log('PaluwaSathi Server running on port ' + PORT);
-  console.log('Health: http://localhost:' + PORT + '/api/health');
 });
