@@ -25,6 +25,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/rescues', require('./routes/rescue.routes'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
