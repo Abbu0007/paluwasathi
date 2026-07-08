@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Phone, MapPin, Lock, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { NEPAL_DISTRICTS } from '../../constants/nepal-districts';
+import api from '../../services/api';
 
 const ROLES = [
   { value: 'volunteer', label: 'Volunteer' },
@@ -19,6 +20,8 @@ export default function SignupPage() {
   });
   const [errors, setErrors] = useState({});
   const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   const update = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value });
@@ -35,10 +38,30 @@ export default function SignupPage() {
     return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setServerError('');
     if (!agreed) return;
     if (!validate()) return;
-    navigate('/verify-otp');
+
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/register', {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        district: form.district,
+        password: form.password,
+        role: form.role,
+      });
+      // DEV: pass devOtp through so OTP page can auto-fill
+      navigate('/verify-otp', {
+        state: { userId: data.userId, phone: form.phone, devOtp: data.devOtp },
+      });
+    } catch (err) {
+      setServerError(err.response?.data?.message || 'Registration failed. Try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,6 +77,10 @@ export default function SignupPage() {
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 p-8 space-y-4">
+          {serverError && (
+            <div className="bg-red-50 text-red-700 text-sm rounded-xl p-3">{serverError}</div>
+          )}
+
           <Input label="Full Name" placeholder="Ramesh Sharma"
             value={form.name} onChange={update('name')} error={errors.name} />
 
@@ -116,7 +143,7 @@ export default function SignupPage() {
           </label>
 
           <Button variant="primary" size="lg" iconRight={ArrowRight}
-            className="w-full" disabled={!agreed} onClick={handleSubmit}>
+            className="w-full" disabled={!agreed} loading={loading} onClick={handleSubmit}>
             Create Free Account
           </Button>
         </div>
