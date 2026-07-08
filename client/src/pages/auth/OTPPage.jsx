@@ -1,17 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import api from '../../services/api';
 
 export default function OTPPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { userId, phone, devOtp } = location.state || {};
+
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [seconds, setSeconds] = useState(300);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const inputsRef = useRef([]);
 
   useEffect(() => {
+    if (!userId) {
+      navigate('/signup');
+      return;
+    }
+    if (devOtp) {
+      setOtp(devOtp.split(''));
+    }
     inputsRef.current[0]?.focus();
-  }, []);
+  }, [userId, devOtp, navigate]);
 
   useEffect(() => {
     if (seconds <= 0) return;
@@ -48,9 +62,24 @@ export default function OTPPage() {
     inputsRef.current[Math.min(pasted.length, 5)]?.focus();
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
+    setError('');
     if (otp.some((d) => d === '')) return;
-    navigate('/dashboard');
+
+    setLoading(true);
+    try {
+      await api.post('/auth/verify-otp', {
+        userId,
+        otp: otp.join(''),
+      });
+      navigate('/login', {
+        state: { verified: true },
+      });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Verification failed.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,11 +92,15 @@ export default function OTPPage() {
           </Link>
           <h1 className="text-2xl font-black text-ink">Verify your phone</h1>
           <p className="text-gray-500 text-sm mt-1">
-            We sent a 6-digit code to your number.
+            We sent a 6-digit code to {phone || 'your number'}.
           </p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 p-8">
+          {error && (
+            <div className="bg-red-50 text-red-700 text-sm rounded-xl p-3 mb-4">{error}</div>
+          )}
+
           <div className="flex justify-center gap-2 mb-6" onPaste={handlePaste}>
             {otp.map((digit, i) => (
               <input
@@ -93,7 +126,7 @@ export default function OTPPage() {
           </p>
 
           <Button variant="primary" size="lg" iconRight={ArrowRight}
-            className="w-full mb-4" onClick={handleVerify}>
+            className="w-full mb-4" loading={loading} onClick={handleVerify}>
             Verify and Continue
           </Button>
 
