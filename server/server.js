@@ -5,6 +5,8 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+require('./config/cloudinary');
+
 const connectDB = require('./config/db');
 connectDB();
 
