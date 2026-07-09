@@ -1,6 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Pet = require('../models/Pet');
+const User = require('../models/User');
 
 const PETS = [
   { name: 'Bruno', species: 'dog', breed: 'Nepali Street Dog', age: 2, gender: 'male', size: 'medium', traits: ['Friendly', 'Energetic', 'Good with kids'], vaccinated: true, neutered: true, description: 'Bruno was rescued from the streets of Baneshwor. He is playful, loves long walks, and gets along wonderfully with children.', shelter: { name: 'Animal Nepal', location: 'Chobhar, Kathmandu', verified: true, phone: '014469601' }, photos: [{ url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=800' }] },
@@ -26,16 +27,26 @@ const seed = async () => {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
+    const ngos = await User.find({ role: 'ngo' });
+    if (ngos.length === 0) {
+      console.error('No NGO accounts found. Run: node seeds/ngos.seed.js first');
+      process.exit(1);
+    }
+
+    const ngoByName = {};
+    ngos.forEach((n) => { ngoByName[n.name] = n._id; });
+
     await Pet.deleteMany({});
     console.log('Cleared existing pets');
 
     const staggered = PETS.map((pet, i) => ({
       ...pet,
+      listedBy: ngoByName[pet.shelter.name] || ngos[0]._id,
       waitingSince: new Date(Date.now() - (i * 7 + 3) * 24 * 60 * 60 * 1000),
     }));
 
     await Pet.insertMany(staggered);
-    console.log(`Seeded ${staggered.length} pets`);
+    console.log(`Seeded ${staggered.length} pets, linked to NGO accounts`);
 
     await mongoose.disconnect();
     process.exit(0);
