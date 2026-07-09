@@ -8,13 +8,17 @@ import SignupPage from './pages/auth/SignupPage';
 import OTPPage from './pages/auth/OTPPage';
 import DashboardPage from './pages/DashboardPage';
 import MyRescuesPage from './pages/dashboard/MyRescuesPage';
+import SavedPetsPage from './pages/dashboard/SavedPetsPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
 import RescueReportPage from './pages/rescue/RescueReportPage';
 import CaseTrackingPage from './pages/rescue/CaseTrackingPage';
 import RescueListPage from './pages/rescue/RescueListPage';
+import AdoptionGalleryPage from './pages/adoption/AdoptionGalleryPage';
+import PetDetailPage from './pages/adoption/PetDetailPage';
+import AdoptionFormPage from './pages/adoption/AdoptionFormPage';
+import ApplicationSubmittedPage from './pages/adoption/ApplicationSubmittedPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
-import AdoptionGalleryPage from './pages/adoption/AdoptionGalleryPage';
 
 function App() {
   return (
@@ -29,7 +33,9 @@ function App() {
           <Route path="/rescue" element={<RescueListPage />} />
           <Route path="/rescue/report" element={<RescueReportPage />} />
           <Route path="/rescue/:id" element={<CaseTrackingPage />} />
+
           <Route path="/adopt" element={<AdoptionGalleryPage />} />
+          <Route path="/adopt/:id" element={<PetDetailPage />} />
 
           <Route path="/lost-found" element={
             <ComingSoonPage title="Lost & Found"
@@ -65,14 +71,14 @@ function App() {
           } />
 
           <Route element={<PrivateRoute />}>
+            <Route path="/adopt/:id/apply" element={<AdoptionFormPage />} />
+            <Route path="/adopt/application/:id" element={<ApplicationSubmittedPage />} />
+
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/dashboard/rescues" element={<MyRescuesPage />} />
+            <Route path="/dashboard/saved-pets" element={<SavedPetsPage />} />
             <Route path="/dashboard/settings" element={<SettingsPage />} />
 
-            <Route path="/dashboard/saved-pets" element={
-              <ComingSoonPage title="Saved Pets"
-                description="Pets you've saved will appear here once adoption launches." />
-            } />
             <Route path="/dashboard/lost-found" element={
               <ComingSoonPage title="My Lost & Found Reports"
                 description="Pets you've reported lost or found will appear here." />
