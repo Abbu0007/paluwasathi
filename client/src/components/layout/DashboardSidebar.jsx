@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Siren, Heart, HandCoins,
-  Users, Calendar, MessageCircle, Settings, LogOut, Menu, X, Search,
+  LayoutDashboard, Siren, Heart, HandCoins, Users, Calendar,
+  MessageCircle, Settings, LogOut, Menu, X, Search, FileText, PawPrint,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { rescueService } from '../../services/rescue.service';
+import { adoptionService } from '../../services/pet.service';
 
-const NAV = [
+const BASE_NAV = [
   { label: 'Overview', path: '/dashboard', Icon: LayoutDashboard },
   { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
   { label: 'Saved Pets', path: '/dashboard/saved-pets', Icon: Heart },
@@ -18,14 +19,27 @@ const NAV = [
   { label: 'My Posts', path: '/dashboard/community', Icon: MessageCircle },
 ];
 
+const NGO_NAV = [
+  { label: 'Overview', path: '/dashboard', Icon: LayoutDashboard },
+  { label: 'Applications', path: '/dashboard/applications', Icon: FileText },
+  { label: 'My Pets', path: '/dashboard/my-pets', Icon: PawPrint },
+  { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
+  { label: 'Saved Pets', path: '/dashboard/saved-pets', Icon: Heart },
+  { label: 'Donations', path: '/dashboard/donations', Icon: HandCoins },
+  { label: 'Events', path: '/dashboard/events', Icon: Calendar },
+  { label: 'My Posts', path: '/dashboard/community', Icon: MessageCircle },
+];
+
 export default function DashboardSidebar() {
   const [open, setOpen] = useState(false);
-  const [impact, setImpact] = useState({ reported: 0, rescued: 0 });
+  const [impact, setImpact] = useState({ reported: 0, rescued: 0, listed: 0, adopted: 0 });
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const isVolunteer = user?.role === 'volunteer';
+  const isNGO = user?.role === 'ngo';
+  const NAV = isNGO ? NGO_NAV : BASE_NAV;
 
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
@@ -37,19 +51,24 @@ export default function DashboardSidebar() {
   useEffect(() => {
     const load = async () => {
       try {
+        if (isNGO) {
+          const { data } = await adoptionService.getNgoStats();
+          setImpact({ reported: 0, rescued: 0, listed: data.listed, adopted: data.adopted });
+          return;
+        }
         const { data } = await rescueService.getMine();
         let rescued = 0;
         if (isVolunteer) {
           const res = await rescueService.getAssigned();
           rescued = res.data.rescues.filter((r) => r.status === 'rescued').length;
         }
-        setImpact({ reported: data.rescues.length, rescued });
+        setImpact({ reported: data.rescues.length, rescued, listed: 0, adopted: 0 });
       } catch {
-        setImpact({ reported: 0, rescued: 0 });
+        setImpact({ reported: 0, rescued: 0, listed: 0, adopted: 0 });
       }
     };
     load();
-  }, [isVolunteer]);
+  }, [isVolunteer, isNGO]);
 
   const handleLogout = () => {
     logout();
@@ -122,23 +141,34 @@ export default function DashboardSidebar() {
       <div className="m-3 p-4 rounded-2xl bg-primary text-white shrink-0">
         <p className="text-xs font-bold uppercase tracking-wide text-white/70 mb-3">Your Impact</p>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-white/80">Cases reported</span>
-            <span className="font-bold">{impact.reported}</span>
-          </div>
-          {isVolunteer && (
-            <div className="flex justify-between">
-              <span className="text-white/80">Animals rescued</span>
-              <span className="font-bold">{impact.rescued}</span>
-            </div>
+          {isNGO ? (
+            <>
+              <div className="flex justify-between">
+                <span className="text-white/80">Pets listed</span>
+                <span className="font-bold">{impact.listed}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-white/80">Pets adopted</span>
+                <span className="font-bold">{impact.adopted}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex justify-between">
+                <span className="text-white/80">Cases reported</span>
+                <span className="font-bold">{impact.reported}</span>
+              </div>
+              {isVolunteer && (
+                <div className="flex justify-between">
+                  <span className="text-white/80">Animals rescued</span>
+                  <span className="font-bold">{impact.rescued}</span>
+                </div>
+              )}
+            </>
           )}
           <div className="flex justify-between">
             <span className="text-white/80">Donated</span>
             <span className="font-bold">NPR 0</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-white/80">Volunteer hrs</span>
-            <span className="font-bold">0</span>
           </div>
         </div>
       </div>
