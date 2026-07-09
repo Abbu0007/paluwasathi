@@ -88,6 +88,9 @@ export default function DashboardPage() {
     subtitle = 'Volunteer — check available cases below.';
   }
 
+  const ctaPath = isNGO ? '/dashboard/my-pets/new' : '/rescue/report';
+  const ctaLabel = isNGO ? 'List a Pet' : 'Report Rescue';
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardSidebar />
@@ -100,10 +103,10 @@ export default function DashboardPage() {
             </h1>
             <p className="text-white/70 text-sm">{subtitle}</p>
           </div>
-          <Link to={isNGO ? '/dashboard/my-pets' : '/rescue/report'} className="shrink-0">
+          <Link to={ctaPath} className="shrink-0">
             <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary text-white px-5 py-3 rounded-full text-sm font-bold hover:bg-primary-dark transition-colors">
               <Plus size={18} />
-              {isNGO ? 'List a Pet' : 'Report Rescue'}
+              {ctaLabel}
             </button>
           </Link>
         </div>

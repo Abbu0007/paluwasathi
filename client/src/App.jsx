@@ -19,8 +19,9 @@ import AdoptionFormPage from './pages/adoption/AdoptionFormPage';
 import ApplicationSubmittedPage from './pages/adoption/ApplicationSubmittedPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
-import ApplicationsPage from './components/dashboard/ApplicationsPage';
-import MyPetsPage from './components/dashboard/MyPetsPage';
+import ApplicationsPage from './pages/dashboard/ApplicationsPage';
+import MyPetsPage from './pages/dashboard/MyPetsPage';
+import ListPetPage from './pages/dashboard/ListPetPage';
 
 function App() {
   return (
@@ -103,6 +104,7 @@ function App() {
             } />
             <Route path="/dashboard/applications" element={<ApplicationsPage />} />
             <Route path="/dashboard/my-pets" element={<MyPetsPage />} />
+            <Route path="/dashboard/my-pets/new" element={<ListPetPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
