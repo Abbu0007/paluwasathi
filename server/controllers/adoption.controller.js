@@ -58,18 +58,43 @@ exports.getAdoptionById = async (req, res) => {
   try {
     const adoption = await Adoption.findById(req.params.id)
       .populate('pet')
-      .populate('applicant', 'name email phone');
+      .populate('applicant', 'name email phone district');
 
     if (!adoption) return res.status(404).json({ message: 'Application not found.' });
 
-    const isOwner = adoption.applicant._id.toString() === req.user.userId;
-    if (!isOwner && !['ngo', 'admin'].includes(req.user.role)) {
+    const isApplicant = adoption.applicant._id.toString() === req.user.userId;
+    const isPetOwner = adoption.pet.listedBy &&
+      adoption.pet.listedBy.toString() === req.user.userId;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isApplicant && !isPetOwner && !isAdmin) {
       return res.status(403).json({ message: 'Access denied.' });
     }
 
     res.json({ adoption });
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch application.', error: err.message });
+  }
+};
+
+exports.getNgoApplications = async (req, res) => {
+  try {
+    const { status } = req.query;
+
+    const myPets = await Pet.find({ listedBy: req.user.userId }).select('_id');
+    const petIds = myPets.map((p) => p._id);
+
+    const filter = { pet: { $in: petIds } };
+    if (status) filter.status = status;
+
+    const adoptions = await Adoption.find(filter)
+      .populate('pet')
+      .populate('applicant', 'name email phone district')
+      .sort({ createdAt: -1 });
+
+    res.json({ adoptions });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch applications.', error: err.message });
   }
 };
 
@@ -80,11 +105,20 @@ exports.updateAdoptionStatus = async (req, res) => {
     const adoption = await Adoption.findById(req.params.id).populate('pet');
     if (!adoption) return res.status(404).json({ message: 'Application not found.' });
 
+    const isPetOwner = adoption.pet.listedBy &&
+      adoption.pet.listedBy.toString() === req.user.userId;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isPetOwner && !isAdmin) {
+      return res.status(403).json({ message: 'You can only review applications for your own pets.' });
+    }
+
     adoption.status = status;
     if (reviewNote) adoption.reviewNote = reviewNote;
     await adoption.save();
 
     const pet = await Pet.findById(adoption.pet._id);
+
     if (status === 'approved') {
       pet.status = 'adopted';
       await pet.save();
@@ -109,14 +143,22 @@ exports.updateAdoptionStatus = async (req, res) => {
   }
 };
 
-exports.getPendingAdoptions = async (req, res) => {
+exports.getNgoStats = async (req, res) => {
   try {
-    const adoptions = await Adoption.find({ status: { $in: ['pending', 'reviewing'] } })
-      .populate('pet')
-      .populate('applicant', 'name email phone district')
-      .sort({ createdAt: -1 });
-    res.json({ adoptions });
+    const myPets = await Pet.find({ listedBy: req.user.userId });
+    const petIds = myPets.map((p) => p._id);
+
+    const listed = myPets.length;
+    const available = myPets.filter((p) => p.status === 'available').length;
+    const adopted = myPets.filter((p) => p.status === 'adopted').length;
+
+    const pending = await Adoption.countDocuments({
+      pet: { $in: petIds },
+      status: { $in: ['pending', 'reviewing'] },
+    });
+
+    res.json({ listed, available, adopted, pending });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch applications.', error: err.message });
+    res.status(500).json({ message: 'Failed to fetch stats.', error: err.message });
   }
 };
