@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Siren, Heart, Users, HandCoins, Plus, ArrowRight } from 'lucide-react';
+import { Siren, Heart, Users, HandCoins, Plus, ArrowRight, CheckCircle2 } from 'lucide-react';
 import DashboardSidebar from '../components/layout/DashboardSidebar';
 import VolunteerPanel from '../components/dashboard/VolunteerPanel';
 import RescueCard from '../components/cards/RescueCard';
@@ -20,24 +20,48 @@ export default function DashboardPage() {
   const isVolunteer = user?.role === 'volunteer';
   const isNGO = user?.role === 'ngo';
 
-  const [myRescues, setMyRescues] = useState([]);
+  const [reported, setReported] = useState([]);
+  const [accepted, setAccepted] = useState([]);
 
   useEffect(() => {
-    rescueService.getMine()
-      .then(({ data }) => setMyRescues(data.rescues))
-      .catch(() => {});
-  }, []);
+    const load = async () => {
+      try {
+        const calls = [rescueService.getMine()];
+        if (isVolunteer) calls.push(rescueService.getAssigned());
+        const results = await Promise.all(calls);
+        setReported(results[0].data.rescues);
+        if (isVolunteer) setAccepted(results[1].data.rescues);
+      } catch {
+        // empty states handle it
+      }
+    };
+    load();
+  }, [isVolunteer]);
 
-  const activeCount = myRescues.filter(
-    (r) => r.status !== 'rescued' && r.status !== 'closed'
+  const activeReported = reported.filter(
+    (r) => !['rescued', 'closed'].includes(r.status)
   ).length;
 
-  const statCards = [
-    { label: 'My Rescue Cases', value: myRescues.length, sub: `${activeCount} active`, Icon: Siren },
-    { label: 'Saved Pets', value: 0, sub: '0 pending', Icon: Heart },
-    { label: 'Volunteer Tasks', value: 0, sub: 'None upcoming', Icon: Users },
-    { label: 'Total Donated', value: 'NPR 0', sub: 'All time', Icon: HandCoins },
-  ];
+  const activeAccepted = accepted.filter(
+    (r) => !['rescued', 'closed'].includes(r.status)
+  ).length;
+
+  const completedRescues = accepted.filter((r) => r.status === 'rescued').length;
+
+  // Volunteers see rescue-focused stats; everyone else sees reporting stats
+  const statCards = isVolunteer
+    ? [
+        { label: 'Animals Rescued', value: completedRescues, sub: 'Completed by you', Icon: CheckCircle2 },
+        { label: 'Active Cases', value: activeAccepted, sub: 'In progress', Icon: Siren },
+        { label: 'Cases Reported', value: reported.length, sub: `${activeReported} active`, Icon: Heart },
+        { label: 'Total Donated', value: 'NPR 0', sub: 'All time', Icon: HandCoins },
+      ]
+    : [
+        { label: 'My Rescue Cases', value: reported.length, sub: `${activeReported} active`, Icon: Siren },
+        { label: 'Saved Pets', value: 0, sub: '0 pending', Icon: Heart },
+        { label: 'Volunteer Tasks', value: 0, sub: 'None upcoming', Icon: Users },
+        { label: 'Total Donated', value: 'NPR 0', sub: 'All time', Icon: HandCoins },
+      ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -51,9 +75,13 @@ export default function DashboardPage() {
               {greeting()}, {firstName}
             </h1>
             <p className="text-white/70 text-sm">
-              {isVolunteer && 'Volunteer'}
-              {isNGO && 'NGO Partner'}
-              {!isVolunteer && !isNGO && "Here's what's happening in your area today."}
+              {isVolunteer && completedRescues > 0
+                ? `You've rescued ${completedRescues} animal${completedRescues !== 1 ? 's' : ''}. Thank you.`
+                : isVolunteer
+                  ? 'Volunteer — check available cases below.'
+                  : isNGO
+                    ? 'NGO Partner'
+                    : "Here's what's happening in your area today."}
             </p>
           </div>
           <Link to="/rescue/report" className="shrink-0">
@@ -78,14 +106,39 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Volunteer-only panel */}
+        {/* Volunteer panel */}
         {isVolunteer && (
           <div className="mb-6">
             <VolunteerPanel />
           </div>
         )}
 
-        {/* Everyone: my reported rescues */}
+        {/* Volunteer: recently completed */}
+        {isVolunteer && completedRescues > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={18} className="text-primary" />
+                <h2 className="font-bold text-ink">Recently Rescued</h2>
+              </div>
+              <Link to="/dashboard/rescues" className="text-sm font-bold text-primary hover:underline flex items-center gap-1">
+                View All <ArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {accepted
+                .filter((r) => r.status === 'rescued')
+                .slice(0, 2)
+                .map((rescue) => (
+                  <Link key={rescue._id} to={`/rescue/${rescue._id}`}>
+                    <RescueCard rescue={rescue} />
+                  </Link>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* Everyone: reported rescues */}
         <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-ink">My Reported Rescues</h2>
@@ -94,7 +147,7 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {myRescues.length === 0 ? (
+          {reported.length === 0 ? (
             <div className="text-center py-10">
               <p className="text-gray-500 text-sm mb-3">You haven't reported any rescues yet.</p>
               <Link to="/rescue/report" className="text-sm font-bold text-primary hover:underline">
@@ -103,7 +156,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 gap-4">
-              {myRescues.slice(0, 4).map((rescue) => (
+              {reported.slice(0, 4).map((rescue) => (
                 <Link key={rescue._id} to={`/rescue/${rescue._id}`}>
                   <RescueCard rescue={rescue} />
                 </Link>
