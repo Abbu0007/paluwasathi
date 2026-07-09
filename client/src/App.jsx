@@ -14,6 +14,7 @@ import CaseTrackingPage from './pages/rescue/CaseTrackingPage';
 import RescueListPage from './pages/rescue/RescueListPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
+import AdoptionGalleryPage from './pages/adoption/AdoptionGalleryPage';
 
 function App() {
   return (
@@ -28,11 +29,8 @@ function App() {
           <Route path="/rescue" element={<RescueListPage />} />
           <Route path="/rescue/report" element={<RescueReportPage />} />
           <Route path="/rescue/:id" element={<CaseTrackingPage />} />
+          <Route path="/adopt" element={<AdoptionGalleryPage />} />
 
-          <Route path="/adopt" element={
-            <ComingSoonPage title="Adopt a Pet"
-              description="Browse animals looking for a forever home. This section opens soon." />
-          } />
           <Route path="/lost-found" element={
             <ComingSoonPage title="Lost & Found"
               description="Report a lost pet or help reunite a found one. Launching soon." />
