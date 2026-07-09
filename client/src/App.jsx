@@ -19,6 +19,8 @@ import AdoptionFormPage from './pages/adoption/AdoptionFormPage';
 import ApplicationSubmittedPage from './pages/adoption/ApplicationSubmittedPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ApplicationsPage from './components/dashboard/ApplicationsPage';
+import MyPetsPage from './components/dashboard/MyPetsPage';
 
 function App() {
   return (
@@ -99,6 +101,8 @@ function App() {
               <ComingSoonPage title="My Posts"
                 description="Stories and updates you've shared will appear here." />
             } />
+            <Route path="/dashboard/applications" element={<ApplicationsPage />} />
+            <Route path="/dashboard/my-pets" element={<MyPetsPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
