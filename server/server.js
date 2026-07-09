@@ -32,6 +32,7 @@ app.use('/api/campaigns', require('./routes/campaign.routes'));
 app.use('/api/donations', require('./routes/donation.routes'));
 app.use('/api/tasks',     require('./routes/task.routes'));
 app.use('/api/signups',   require('./routes/signup.routes'));
+app.use('/api/lostfound', require('./routes/lostfound.routes'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
