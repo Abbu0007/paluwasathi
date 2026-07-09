@@ -39,6 +39,11 @@ import TaskDetailPage from './pages/volunteer/TaskDetailPage';
 import TaskSignupPage from './pages/volunteer/TaskSignupPage';
 import SignupConfirmationPage from './pages/volunteer/SignupConfirmationPage';
 
+import LostFoundListPage from './pages/lostfound/LostFoundListPage';
+import ReportLostFoundPage from './pages/lostfound/ReportLostFoundPage';
+import LostFoundDetailPage from './pages/lostfound/LostFoundDetailPage';
+import MyLostFoundPage from './pages/dashboard/MyLostFoundPage';
+
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -66,10 +71,9 @@ function App() {
           <Route path="/volunteer" element={<VolunteerListPage />} />
           <Route path="/volunteer/:id" element={<TaskDetailPage />} />
 
-          <Route path="/lost-found" element={
-            <ComingSoonPage title="Lost & Found"
-              description="Report a lost pet or help reunite a found one. Launching soon." />
-          } />
+          <Route path="/lost-found" element={<LostFoundListPage />} />
+          <Route path="/lost-found/:id" element={<LostFoundDetailPage />} />
+
           <Route path="/community" element={
             <ComingSoonPage title="Community"
               description="Share rescue stories, updates and connect with other animal lovers." />
@@ -112,6 +116,8 @@ function App() {
             <Route path="/dashboard/campaigns" element={<CampaignsPage />} />
             <Route path="/dashboard/volunteer" element={<VolunteerTasksPage />} />
             <Route path="/dashboard/tasks" element={<NgoTasksPage />} />
+            <Route path="/lost-found/report" element={<ReportLostFoundPage />} />
+            <Route path="/dashboard/lost-found" element={<MyLostFoundPage />} />
 
             <Route path="/dashboard/lost-found" element={
               <ComingSoonPage title="My Lost & Found Reports"
