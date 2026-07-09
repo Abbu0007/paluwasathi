@@ -14,20 +14,31 @@ import SettingsPage from './pages/dashboard/SettingsPage';
 import ApplicationsPage from './pages/dashboard/ApplicationsPage';
 import MyPetsPage from './pages/dashboard/MyPetsPage';
 import ListPetPage from './pages/dashboard/ListPetPage';
-import DonationsPage from './pages/dashboard/DonationPage';
+import DonationsPage from './pages/dashboard/DonationsPage';
 import CampaignsPage from './pages/dashboard/CampaignsPage';
+import VolunteerTasksPage from './pages/dashboard/VolunteerTasksPage';
+import NgoTasksPage from './pages/dashboard/NgoTasksPage';
+
 import RescueReportPage from './pages/rescue/RescueReportPage';
 import CaseTrackingPage from './pages/rescue/CaseTrackingPage';
 import RescueListPage from './pages/rescue/RescueListPage';
+
 import AdoptionGalleryPage from './pages/adoption/AdoptionGalleryPage';
 import PetDetailPage from './pages/adoption/PetDetailPage';
 import AdoptionFormPage from './pages/adoption/AdoptionFormPage';
 import ApplicationSubmittedPage from './pages/adoption/ApplicationSubmittedPage';
+
 import DonatePage from './pages/donate/DonatePage';
 import CampaignDetailPage from './pages/donate/CampaignDetailPage';
 import NgoProfilePage from './pages/donate/NgoProfilePage';
 import PaymentPage from './pages/donate/PaymentPage';
 import ReceiptPage from './pages/donate/ReceiptPage';
+
+import VolunteerListPage from './pages/volunteer/VolunteerListPage';
+import TaskDetailPage from './pages/volunteer/TaskDetailPage';
+import TaskSignupPage from './pages/volunteer/TaskSignupPage';
+import SignupConfirmationPage from './pages/volunteer/SignupConfirmationPage';
+
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -52,13 +63,12 @@ function App() {
           <Route path="/donate/campaign/:id" element={<CampaignDetailPage />} />
           <Route path="/donate/ngo/:id" element={<NgoProfilePage />} />
 
+          <Route path="/volunteer" element={<VolunteerListPage />} />
+          <Route path="/volunteer/:id" element={<TaskDetailPage />} />
+
           <Route path="/lost-found" element={
             <ComingSoonPage title="Lost & Found"
               description="Report a lost pet or help reunite a found one. Launching soon." />
-          } />
-          <Route path="/volunteer" element={
-            <ComingSoonPage title="Volunteer Opportunities"
-              description="Find rescue drives, shelter shifts and awareness campaigns near you." />
           } />
           <Route path="/community" element={
             <ComingSoonPage title="Community"
@@ -88,6 +98,9 @@ function App() {
             <Route path="/donate/payment/:id" element={<PaymentPage />} />
             <Route path="/donate/receipt/:id" element={<ReceiptPage />} />
 
+            <Route path="/volunteer/:id/signup" element={<TaskSignupPage />} />
+            <Route path="/volunteer/confirmation/:id" element={<SignupConfirmationPage />} />
+
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/dashboard/rescues" element={<MyRescuesPage />} />
             <Route path="/dashboard/saved-pets" element={<SavedPetsPage />} />
@@ -97,14 +110,12 @@ function App() {
             <Route path="/dashboard/my-pets/new" element={<ListPetPage />} />
             <Route path="/dashboard/donations" element={<DonationsPage />} />
             <Route path="/dashboard/campaigns" element={<CampaignsPage />} />
+            <Route path="/dashboard/volunteer" element={<VolunteerTasksPage />} />
+            <Route path="/dashboard/tasks" element={<NgoTasksPage />} />
 
             <Route path="/dashboard/lost-found" element={
               <ComingSoonPage title="My Lost & Found Reports"
                 description="Pets you've reported lost or found will appear here." />
-            } />
-            <Route path="/dashboard/volunteer" element={
-              <ComingSoonPage title="My Volunteer Tasks"
-                description="Tasks you sign up for will appear here." />
             } />
             <Route path="/dashboard/events" element={
               <ComingSoonPage title="My Events"

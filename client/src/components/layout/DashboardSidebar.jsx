@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Siren, Heart, HandCoins, Users, Calendar,
-  MessageCircle, Settings, LogOut, Menu, X, Search, FileText, PawPrint,Receipt,
+  MessageCircle, Settings, LogOut, Menu, X, Search, FileText, PawPrint, Receipt,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { rescueService } from '../../services/rescue.service';
 import { adoptionService } from '../../services/pet.service';
+import { signupService } from '../../services/task.service';
 
 const BASE_NAV = [
   { label: 'Overview', path: '/dashboard', Icon: LayoutDashboard },
@@ -24,21 +25,28 @@ const NGO_NAV = [
   { label: 'Applications', path: '/dashboard/applications', Icon: FileText },
   { label: 'My Pets', path: '/dashboard/my-pets', Icon: PawPrint },
   { label: 'Campaigns', path: '/dashboard/campaigns', Icon: HandCoins },
-  { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
+  { label: 'Opportunities', path: '/dashboard/tasks', Icon: Users },
   { label: 'Donations', path: '/dashboard/donations', Icon: Receipt },
+  { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
   { label: 'Events', path: '/dashboard/events', Icon: Calendar },
-  { label: 'My Posts', path: '/dashboard/community', Icon: MessageCircle },
 ];
 
 export default function DashboardSidebar() {
   const [open, setOpen] = useState(false);
-  const [impact, setImpact] = useState({ reported: 0, rescued: 0, listed: 0, adopted: 0 });
+  const [impact, setImpact] = useState({
+    reported: 0,
+    rescued: 0,
+    listed: 0,
+    adopted: 0,
+    hours: 0,
+  });
+
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const isVolunteer = user?.role === 'volunteer';
-  const isNGO = user?.role === 'ngo';
+  const isVolunteer = user && user.role === 'volunteer';
+  const isNGO = user && user.role === 'ngo';
   const NAV = isNGO ? NGO_NAV : BASE_NAV;
 
   useEffect(() => { setOpen(false); }, [location.pathname]);
@@ -52,19 +60,43 @@ export default function DashboardSidebar() {
     const load = async () => {
       try {
         if (isNGO) {
-          const { data } = await adoptionService.getNgoStats();
-          setImpact({ reported: 0, rescued: 0, listed: data.listed, adopted: data.adopted });
+          const res = await adoptionService.getNgoStats();
+          setImpact({
+            reported: 0,
+            rescued: 0,
+            listed: res.data.listed,
+            adopted: res.data.adopted,
+            hours: 0,
+          });
           return;
         }
-        const { data } = await rescueService.getMine();
+
+        const mine = await rescueService.getMine();
         let rescued = 0;
         if (isVolunteer) {
-          const res = await rescueService.getAssigned();
-          rescued = res.data.rescues.filter((r) => r.status === 'rescued').length;
+          const assigned = await rescueService.getAssigned();
+          rescued = assigned.data.rescues.filter(function (r) {
+            return r.status === 'rescued';
+          }).length;
         }
-        setImpact({ reported: data.rescues.length, rescued, listed: 0, adopted: 0 });
+
+        let hours = 0;
+        try {
+          const signups = await signupService.getMine();
+          hours = signups.data.totalHours;
+        } catch {
+          hours = 0;
+        }
+
+        setImpact({
+          reported: mine.data.rescues.length,
+          rescued,
+          listed: 0,
+          adopted: 0,
+          hours,
+        });
       } catch {
-        setImpact({ reported: 0, rescued: 0, listed: 0, adopted: 0 });
+        setImpact({ reported: 0, rescued: 0, listed: 0, adopted: 0, hours: 0 });
       }
     };
     load();
@@ -75,9 +107,13 @@ export default function DashboardSidebar() {
     navigate('/');
   };
 
-  const initials = user?.name
-    ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+  const initials = user && user.name
+    ? user.name.split(' ').map(function (n) { return n[0]; }).slice(0, 2).join('').toUpperCase()
     : 'U';
+
+  const asideClass = open
+    ? 'w-[280px] lg:w-[260px] bg-white border-r border-gray-100 h-screen flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 translate-x-0'
+    : 'w-[280px] lg:w-[260px] bg-white border-r border-gray-100 h-screen flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 -translate-x-full lg:translate-x-0';
 
   const sidebarContent = (
     <>
@@ -86,7 +122,7 @@ export default function DashboardSidebar() {
           <img src="/logo.png" alt="PaluwaSathi" className="h-8 w-auto" />
           <span className="text-lg font-black text-ink">PaluwaSathi</span>
         </Link>
-        <button onClick={() => setOpen(false)} className="lg:hidden text-gray-400" aria-label="Close menu">
+        <button onClick={function () { setOpen(false); }} className="lg:hidden text-gray-400" aria-label="Close menu">
           <X size={22} />
         </button>
       </div>
@@ -96,26 +132,23 @@ export default function DashboardSidebar() {
           {initials}
         </span>
         <div className="min-w-0">
-          <p className="font-bold text-ink text-sm truncate">{user?.name}</p>
-          <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+          <p className="font-bold text-ink text-sm truncate">{user && user.name}</p>
+          <p className="text-xs text-gray-500 capitalize">{user && user.role}</p>
         </div>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {NAV.map(({ label, path, Icon }) => {
-          const active = location.pathname === path;
+        {NAV.map(function (item) {
+          const Icon = item.Icon;
+          const active = location.pathname === item.path;
+          const linkClass = active
+            ? 'flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors bg-primary-50 text-primary-dark border-l-4 border-primary'
+            : 'flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors text-gray-600 hover:bg-gray-50 border-l-4 border-transparent';
+
           return (
-            <Link
-              key={path}
-              to={path}
-              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${
-                active
-                  ? 'bg-primary-50 text-primary-dark border-l-4 border-primary'
-                  : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent'
-              }`}
-            >
+            <Link key={item.path} to={item.path} className={linkClass}>
               <Icon size={18} className="shrink-0" />
-              {label}
+              {item.label}
             </Link>
           );
         })}
@@ -164,6 +197,10 @@ export default function DashboardSidebar() {
                   <span className="font-bold">{impact.rescued}</span>
                 </div>
               )}
+              <div className="flex justify-between">
+                <span className="text-white/80">Volunteer hrs</span>
+                <span className="font-bold">{impact.hours}</span>
+              </div>
             </>
           )}
           <div className="flex justify-between">
@@ -178,7 +215,7 @@ export default function DashboardSidebar() {
   return (
     <>
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 h-[64px] flex items-center justify-between px-4">
-        <button onClick={() => setOpen(true)} className="text-ink" aria-label="Open menu">
+        <button onClick={function () { setOpen(true); }} className="text-ink" aria-label="Open menu">
           <Menu size={26} />
         </button>
         <Link to="/dashboard" className="flex items-center gap-2">
@@ -191,14 +228,10 @@ export default function DashboardSidebar() {
       </div>
 
       {open && (
-        <div className="lg:hidden fixed inset-0 bg-black/40 z-40" onClick={() => setOpen(false)} />
+        <div className="lg:hidden fixed inset-0 bg-black/40 z-40" onClick={function () { setOpen(false); }} />
       )}
 
-      <aside
-        className={`w-[280px] lg:w-[260px] bg-white border-r border-gray-100 h-screen flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 ${
-          open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
-      >
+      <aside className={asideClass}>
         {sidebarContent}
       </aside>
     </>
