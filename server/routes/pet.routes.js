@@ -10,6 +10,8 @@ const {
   savePet,
   unsavePet,
   getSavedPets,
+  getMyListedPets,
+  updatePet,
 } = require('../controllers/pet.controller');
 
 const handlePetUpload = (req, res, next) => {
@@ -21,10 +23,12 @@ const handlePetUpload = (req, res, next) => {
 
 router.get('/stats', getPetStats);
 router.get('/saved', auth, getSavedPets);
+router.get('/listed', auth, role('ngo', 'admin'), getMyListedPets);
 router.get('/', getPets);
 router.post('/', auth, role('ngo', 'admin'), handlePetUpload, createPet);
 router.post('/:petId/save', auth, savePet);
 router.delete('/:petId/save', auth, unsavePet);
+router.patch('/:id', auth, role('ngo', 'admin'), updatePet);
 router.get('/:id', getPetById);
 
 module.exports = router;
