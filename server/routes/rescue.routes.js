@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
+const role = require('../middleware/role');
 const { uploadRescuePhotos } = require('../config/cloudinary');
 const {
   createRescue,
@@ -8,23 +9,34 @@ const {
   updateRescue,
   getMyRescues,
   getRescueStats,
+  getAvailableRescues,
+  acceptRescue,
+  updateRescueStatus,
+  getAssignedRescues,
 } = require('../controllers/rescue.controller');
 
-// Inline multer middleware instead of using the wrapper
 const handleRescueUpload = (req, res, next) => {
   uploadRescuePhotos(req, res, (err) => {
-    if (err) {
-      return res.status(400).json({ message: err.message || 'Upload failed.' });
-    }
+    if (err) return res.status(400).json({ message: err.message || 'Upload failed.' });
     next();
   });
 };
 
+// Public / everyone
 router.get('/stats', getRescueStats);
-router.get('/my', auth, getMyRescues);
-router.get('/', getRescues);
-router.get('/:id', getRescueById);
 router.post('/', handleRescueUpload, createRescue);
-router.patch('/:id', auth, updateRescue);
+router.get('/', getRescues);
+
+// Authenticated — any role
+router.get('/my', auth, getMyRescues);
+
+// Volunteers only
+router.get('/available', auth, role('volunteer'), getAvailableRescues);
+router.get('/assigned', auth, role('volunteer'), getAssignedRescues);
+router.post('/:id/accept', auth, role('volunteer'), acceptRescue);
+router.patch('/:id/status', auth, role('volunteer', 'admin'), updateRescueStatus);
+
+router.get('/:id', getRescueById);
+router.patch('/:id', auth, role('admin'), updateRescue);
 
 module.exports = router;
