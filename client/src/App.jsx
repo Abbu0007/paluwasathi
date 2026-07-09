@@ -6,10 +6,16 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import OTPPage from './pages/auth/OTPPage';
+
 import DashboardPage from './pages/DashboardPage';
 import MyRescuesPage from './pages/dashboard/MyRescuesPage';
 import SavedPetsPage from './pages/dashboard/SavedPetsPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
+import ApplicationsPage from './pages/dashboard/ApplicationsPage';
+import MyPetsPage from './pages/dashboard/MyPetsPage';
+import ListPetPage from './pages/dashboard/ListPetPage';
+import DonationsPage from './pages/dashboard/DonationPage';
+import CampaignsPage from './pages/dashboard/CampaignsPage';
 import RescueReportPage from './pages/rescue/RescueReportPage';
 import CaseTrackingPage from './pages/rescue/CaseTrackingPage';
 import RescueListPage from './pages/rescue/RescueListPage';
@@ -17,11 +23,13 @@ import AdoptionGalleryPage from './pages/adoption/AdoptionGalleryPage';
 import PetDetailPage from './pages/adoption/PetDetailPage';
 import AdoptionFormPage from './pages/adoption/AdoptionFormPage';
 import ApplicationSubmittedPage from './pages/adoption/ApplicationSubmittedPage';
+import DonatePage from './pages/donate/DonatePage';
+import CampaignDetailPage from './pages/donate/CampaignDetailPage';
+import NgoProfilePage from './pages/donate/NgoProfilePage';
+import PaymentPage from './pages/donate/PaymentPage';
+import ReceiptPage from './pages/donate/ReceiptPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
-import ApplicationsPage from './pages/dashboard/ApplicationsPage';
-import MyPetsPage from './pages/dashboard/MyPetsPage';
-import ListPetPage from './pages/dashboard/ListPetPage';
 
 function App() {
   return (
@@ -40,6 +48,10 @@ function App() {
           <Route path="/adopt" element={<AdoptionGalleryPage />} />
           <Route path="/adopt/:id" element={<PetDetailPage />} />
 
+          <Route path="/donate" element={<DonatePage />} />
+          <Route path="/donate/campaign/:id" element={<CampaignDetailPage />} />
+          <Route path="/donate/ngo/:id" element={<NgoProfilePage />} />
+
           <Route path="/lost-found" element={
             <ComingSoonPage title="Lost & Found"
               description="Report a lost pet or help reunite a found one. Launching soon." />
@@ -47,10 +59,6 @@ function App() {
           <Route path="/volunteer" element={
             <ComingSoonPage title="Volunteer Opportunities"
               description="Find rescue drives, shelter shifts and awareness campaigns near you." />
-          } />
-          <Route path="/donate" element={
-            <ComingSoonPage title="Support a Campaign"
-              description="Fund rescue operations and NGO campaigns across Nepal." />
           } />
           <Route path="/community" element={
             <ComingSoonPage title="Community"
@@ -77,18 +85,22 @@ function App() {
             <Route path="/adopt/:id/apply" element={<AdoptionFormPage />} />
             <Route path="/adopt/application/:id" element={<ApplicationSubmittedPage />} />
 
+            <Route path="/donate/payment/:id" element={<PaymentPage />} />
+            <Route path="/donate/receipt/:id" element={<ReceiptPage />} />
+
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/dashboard/rescues" element={<MyRescuesPage />} />
             <Route path="/dashboard/saved-pets" element={<SavedPetsPage />} />
             <Route path="/dashboard/settings" element={<SettingsPage />} />
+            <Route path="/dashboard/applications" element={<ApplicationsPage />} />
+            <Route path="/dashboard/my-pets" element={<MyPetsPage />} />
+            <Route path="/dashboard/my-pets/new" element={<ListPetPage />} />
+            <Route path="/dashboard/donations" element={<DonationsPage />} />
+            <Route path="/dashboard/campaigns" element={<CampaignsPage />} />
 
             <Route path="/dashboard/lost-found" element={
               <ComingSoonPage title="My Lost & Found Reports"
                 description="Pets you've reported lost or found will appear here." />
-            } />
-            <Route path="/dashboard/donations" element={
-              <ComingSoonPage title="Donation History"
-                description="Your donations and receipts will appear here." />
             } />
             <Route path="/dashboard/volunteer" element={
               <ComingSoonPage title="My Volunteer Tasks"
@@ -102,9 +114,6 @@ function App() {
               <ComingSoonPage title="My Posts"
                 description="Stories and updates you've shared will appear here." />
             } />
-            <Route path="/dashboard/applications" element={<ApplicationsPage />} />
-            <Route path="/dashboard/my-pets" element={<MyPetsPage />} />
-            <Route path="/dashboard/my-pets/new" element={<ListPetPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

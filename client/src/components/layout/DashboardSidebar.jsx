@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Siren, Heart, HandCoins, Users, Calendar,
-  MessageCircle, Settings, LogOut, Menu, X, Search, FileText, PawPrint,
+  MessageCircle, Settings, LogOut, Menu, X, Search, FileText, PawPrint,Receipt,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { rescueService } from '../../services/rescue.service';
@@ -23,9 +23,9 @@ const NGO_NAV = [
   { label: 'Overview', path: '/dashboard', Icon: LayoutDashboard },
   { label: 'Applications', path: '/dashboard/applications', Icon: FileText },
   { label: 'My Pets', path: '/dashboard/my-pets', Icon: PawPrint },
+  { label: 'Campaigns', path: '/dashboard/campaigns', Icon: HandCoins },
   { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
-  { label: 'Saved Pets', path: '/dashboard/saved-pets', Icon: Heart },
-  { label: 'Donations', path: '/dashboard/donations', Icon: HandCoins },
+  { label: 'Donations', path: '/dashboard/donations', Icon: Receipt },
   { label: 'Events', path: '/dashboard/events', Icon: Calendar },
   { label: 'My Posts', path: '/dashboard/community', Icon: MessageCircle },
 ];
