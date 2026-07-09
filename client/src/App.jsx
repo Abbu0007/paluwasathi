@@ -20,18 +20,15 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Public */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/verify-otp" element={<OTPPage />} />
 
-          {/* Rescue */}
           <Route path="/rescue" element={<RescueListPage />} />
           <Route path="/rescue/report" element={<RescueReportPage />} />
           <Route path="/rescue/:id" element={<CaseTrackingPage />} />
 
-          {/* Coming soon — public */}
           <Route path="/adopt" element={
             <ComingSoonPage title="Adopt a Pet"
               description="Browse animals looking for a forever home. This section opens soon." />
@@ -69,7 +66,6 @@ function App() {
               description="Password reset via email is coming soon." />
           } />
 
-          {/* Protected */}
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/dashboard/rescues" element={<MyRescuesPage />} />
@@ -78,6 +74,10 @@ function App() {
             <Route path="/dashboard/saved-pets" element={
               <ComingSoonPage title="Saved Pets"
                 description="Pets you've saved will appear here once adoption launches." />
+            } />
+            <Route path="/dashboard/lost-found" element={
+              <ComingSoonPage title="My Lost & Found Reports"
+                description="Pets you've reported lost or found will appear here." />
             } />
             <Route path="/dashboard/donations" element={
               <ComingSoonPage title="Donation History"
@@ -90,6 +90,10 @@ function App() {
             <Route path="/dashboard/events" element={
               <ComingSoonPage title="My Events"
                 description="Events you're attending will appear here." />
+            } />
+            <Route path="/dashboard/community" element={
+              <ComingSoonPage title="My Posts"
+                description="Stories and updates you've shared will appear here." />
             } />
           </Route>
 

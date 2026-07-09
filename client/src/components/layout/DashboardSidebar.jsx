@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Siren, Heart, HandCoins,
-  Users, Calendar, MessageCircle, Settings, LogOut, Menu, X,
+  Users, Calendar, MessageCircle, Settings, LogOut, Menu, X, Search,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { rescueService } from '../../services/rescue.service';
@@ -11,10 +11,11 @@ const NAV = [
   { label: 'Overview', path: '/dashboard', Icon: LayoutDashboard },
   { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
   { label: 'Saved Pets', path: '/dashboard/saved-pets', Icon: Heart },
+  { label: 'Lost & Found', path: '/dashboard/lost-found', Icon: Search },
   { label: 'Donations', path: '/dashboard/donations', Icon: HandCoins },
   { label: 'Volunteer Tasks', path: '/dashboard/volunteer', Icon: Users },
   { label: 'Events', path: '/dashboard/events', Icon: Calendar },
-  { label: 'Community', path: '/community', Icon: MessageCircle },
+  { label: 'My Posts', path: '/dashboard/community', Icon: MessageCircle },
 ];
 
 export default function DashboardSidebar() {
@@ -44,7 +45,7 @@ export default function DashboardSidebar() {
         }
         setImpact({ reported: data.rescues.length, rescued });
       } catch {
-        // keep zeros
+        setImpact({ reported: 0, rescued: 0 });
       }
     };
     load();
