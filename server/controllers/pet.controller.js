@@ -90,7 +90,7 @@ exports.createPet = async (req, res) => {
     const body = req.body;
 
     let photos = [];
-    if (req.files?.length) {
+    if (req.files && req.files.length) {
       const uploads = await Promise.all(
         req.files.map((f) => uploadToCloudinary(f.buffer, 'paluwasathi/pets'))
       );
@@ -149,5 +149,44 @@ exports.getSavedPets = async (req, res) => {
     res.json({ pets: user.savedPets });
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch saved pets.', error: err.message });
+  }
+};
+
+exports.getMyListedPets = async (req, res) => {
+  try {
+    const pets = await Pet.find({ listedBy: req.user.userId }).sort({ createdAt: -1 });
+    res.json({ pets });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch your pets.', error: err.message });
+  }
+};
+
+exports.updatePet = async (req, res) => {
+  try {
+    const pet = await Pet.findById(req.params.id);
+    if (!pet) return res.status(404).json({ message: 'Pet not found.' });
+
+    const isOwner = pet.listedBy && pet.listedBy.toString() === req.user.userId;
+    if (!isOwner && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'You can only edit your own listings.' });
+    }
+
+    const allowed = ['name', 'breed', 'age', 'ageUnit', 'gender', 'size',
+      'vaccinated', 'neutered', 'microchipped', 'description', 'status'];
+
+    allowed.forEach((field) => {
+      if (req.body[field] !== undefined) pet[field] = req.body[field];
+    });
+
+    if (req.body.traits) {
+      pet.traits = typeof req.body.traits === 'string'
+        ? JSON.parse(req.body.traits)
+        : req.body.traits;
+    }
+
+    await pet.save();
+    res.json({ message: 'Pet updated.', pet });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update pet.', error: err.message });
   }
 };
