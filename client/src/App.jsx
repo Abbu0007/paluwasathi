@@ -2,6 +2,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/layout/PrivateRoute';
 
+import AdminRoute from './components/layout/AdminRoute';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminCollectionPage from './pages/admin/AdminCollectionPage';
+
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
@@ -103,6 +108,11 @@ function App() {
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
           <Route element={<PrivateRoute />}>
+            <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/admin/:collection" element={<AdminCollectionPage />} />
+            </Route>
             <Route path="/adopt/:id/apply" element={<AdoptionFormPage />} />
             <Route path="/adopt/application/:id" element={<ApplicationSubmittedPage />} />
 
