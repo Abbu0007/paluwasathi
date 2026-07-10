@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../services/api';
+import { authService } from '../../services/auth.service';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -32,15 +32,18 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', {
-        emailOrPhone: form.emailOrPhone,
-        password: form.password,
-      });
+      const { data } = await authService.login(form.emailOrPhone, form.password);
       login(data.token, data.user);
-      navigate('/dashboard');
+      navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
-      setServerError(err.response?.data?.message || 'Login failed. Try again.');
-    } finally {
+      const res = err.response && err.response.data;
+
+      if (res && res.needsVerification) {
+        navigate('/verify-otp', { state: { userId: res.userId } });
+        return;
+      }
+
+      setServerError((res && res.message) || 'Login failed. Try again.');
       setLoading(false);
     }
   };
