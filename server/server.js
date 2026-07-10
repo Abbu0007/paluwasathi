@@ -34,6 +34,8 @@ app.use('/api/tasks',     require('./routes/task.routes'));
 app.use('/api/signups',   require('./routes/signup.routes'));
 app.use('/api/lostfound', require('./routes/lostfound.routes'));
 app.use('/api/community', require('./routes/community.routes'));
+app.use('/api/events', require('./routes/event.routes'));
+app.use('/api/rsvps',  require('./routes/rsvp.routes'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
