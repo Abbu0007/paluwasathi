@@ -18,6 +18,10 @@ import DonationsPage from './pages/dashboard/DonationsPage';
 import CampaignsPage from './pages/dashboard/CampaignsPage';
 import VolunteerTasksPage from './pages/dashboard/VolunteerTasksPage';
 import NgoTasksPage from './pages/dashboard/NgoTasksPage';
+import MyLostFoundPage from './pages/dashboard/MyLostFoundPage';
+import MyPostsPage from './pages/dashboard/MyPostsPage';
+import MyEventsPage from './pages/dashboard/MyEventsPage';
+import NgoEventsPage from './pages/dashboard/NgoEventsPage';
 
 import RescueReportPage from './pages/rescue/RescueReportPage';
 import CaseTrackingPage from './pages/rescue/CaseTrackingPage';
@@ -42,19 +46,18 @@ import SignupConfirmationPage from './pages/volunteer/SignupConfirmationPage';
 import LostFoundListPage from './pages/lostfound/LostFoundListPage';
 import ReportLostFoundPage from './pages/lostfound/ReportLostFoundPage';
 import LostFoundDetailPage from './pages/lostfound/LostFoundDetailPage';
-import MyLostFoundPage from './pages/dashboard/MyLostFoundPage';
 
 import CommunityPage from './pages/community/CommunityPage';
 import PostDetailPage from './pages/community/PostDetailPage';
 import CreatePostPage from './pages/community/CreatePostPage';
-import MyPostsPage from './pages/dashboard/MyPostsPage';
 
 import EventsPage from './pages/events/EventsPage';
 import EventDetailPage from './pages/events/EventDetailPage';
-import EventRsvpPage from './pages/events/EventsRsvpPage';
+import EventRsvpPage from './pages/events/EventRsvpPage';
 import EventTicketPage from './pages/events/EventTicketPage';
-import MyEventsPage from './pages/dashboard/MyEventsPage';
-import NgoEventsPage from './pages/dashboard/NgoEventsPage';
+
+import EmergencyPage from './pages/EmergencyPage';
+import AboutPage from './pages/AboutPage';
 
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -92,14 +95,9 @@ function App() {
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
 
-          <Route path="/emergency" element={
-            <ComingSoonPage title="Emergency Contacts"
-              description="Quick access to vets and rescue NGOs. For now, report a rescue to get help." />
-          } />
-          <Route path="/about" element={
-            <ComingSoonPage title="About PaluwaSathi"
-              description="Learn about our mission and animal welfare guides." />
-          } />
+          <Route path="/emergency" element={<EmergencyPage />} />
+          <Route path="/about" element={<AboutPage />} />
+
           <Route path="/forgot-password" element={
             <ComingSoonPage title="Reset Password"
               description="Password reset via email is coming soon." />
@@ -115,6 +113,13 @@ function App() {
             <Route path="/volunteer/:id/signup" element={<TaskSignupPage />} />
             <Route path="/volunteer/confirmation/:id" element={<SignupConfirmationPage />} />
 
+            <Route path="/lost-found/report" element={<ReportLostFoundPage />} />
+
+            <Route path="/community/new" element={<CreatePostPage />} />
+
+            <Route path="/events/:id/rsvp" element={<EventRsvpPage />} />
+            <Route path="/events/ticket/:id" element={<EventTicketPage />} />
+
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/dashboard/rescues" element={<MyRescuesPage />} />
             <Route path="/dashboard/saved-pets" element={<SavedPetsPage />} />
@@ -126,20 +131,10 @@ function App() {
             <Route path="/dashboard/campaigns" element={<CampaignsPage />} />
             <Route path="/dashboard/volunteer" element={<VolunteerTasksPage />} />
             <Route path="/dashboard/tasks" element={<NgoTasksPage />} />
-            <Route path="/lost-found/report" element={<ReportLostFoundPage />} />
             <Route path="/dashboard/lost-found" element={<MyLostFoundPage />} />
-            <Route path="/community/new" element={<CreatePostPage />} />
             <Route path="/dashboard/community" element={<MyPostsPage />} />
-
-            <Route path="/events/:id/rsvp" element={<EventRsvpPage />} />
-            <Route path="/events/ticket/:id" element={<EventTicketPage />} />
             <Route path="/dashboard/events" element={<MyEventsPage />} />
             <Route path="/dashboard/ngo-events" element={<NgoEventsPage />} />
-
-            <Route path="/dashboard/lost-found" element={
-              <ComingSoonPage title="My Lost & Found Reports"
-                description="Pets you've reported lost or found will appear here." />
-            } />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

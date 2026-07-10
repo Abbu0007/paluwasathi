@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu, X, ChevronDown, LogOut, LayoutDashboard,
-  Siren, Heart, Search, Users, HandCoins, MessageCircle, Calendar, Info,
+  Siren, MessageCircle, Calendar, Info,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -43,7 +43,7 @@ export default function Navbar() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const moreRef = useRef(null);
   const userRef = useRef(null);
@@ -188,7 +188,7 @@ export default function Navbar() {
               <span className="md:hidden">Report</span>
             </Link>
 
-            {isAuthenticated ? (
+            {user ? (
               <div ref={userRef} className="relative hidden lg:block">
                 <button
                   onClick={function () { setUserMenuOpen(!userMenuOpen); }}
@@ -273,7 +273,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {isAuthenticated && (
+        {user && (
           <Link
             to="/dashboard"
             className="flex items-center gap-3 mx-3 mt-3 p-3 bg-gray-50 rounded-xl shrink-0"
@@ -341,7 +341,7 @@ export default function Navbar() {
             <Siren size={16} /> Report a Rescue
           </Link>
 
-          {isAuthenticated ? (
+          {user ? (
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-full border-2 border-gray-200 text-danger text-sm font-bold"

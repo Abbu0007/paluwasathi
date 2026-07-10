@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Siren, Heart, HandCoins, Users, Calendar,
-  MessageCircle, Settings, LogOut, Menu, X, Search, FileText, PawPrint, Receipt,
+  MessageCircle, Settings, LogOut, Menu, X, Search, FileText,
+  PawPrint, Receipt, Home,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { rescueService } from '../../services/rescue.service';
 import { adoptionService } from '../../services/pet.service';
 import { signupService } from '../../services/task.service';
+import { donationService } from '../../services/donation.service';
 
 const BASE_NAV = [
   { label: 'Overview', path: '/dashboard', Icon: LayoutDashboard },
@@ -31,6 +33,11 @@ const NGO_NAV = [
   { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
 ];
 
+const formatNPR = (amount) => {
+  if (!amount) return 'NPR 0';
+  return 'NPR ' + Number(amount).toLocaleString('en-IN');
+};
+
 export default function DashboardSidebar() {
   const [open, setOpen] = useState(false);
   const [impact, setImpact] = useState({
@@ -39,6 +46,8 @@ export default function DashboardSidebar() {
     listed: 0,
     adopted: 0,
     hours: 0,
+    donated: 0,
+    raised: 0,
   });
 
   const location = useLocation();
@@ -60,18 +69,25 @@ export default function DashboardSidebar() {
     const load = async () => {
       try {
         if (isNGO) {
-          const res = await adoptionService.getNgoStats();
+          const [pets, donations] = await Promise.all([
+            adoptionService.getNgoStats(),
+            donationService.getNgoStats().catch(function () { return { data: {} }; }),
+          ]);
+
           setImpact({
             reported: 0,
             rescued: 0,
-            listed: res.data.listed,
-            adopted: res.data.adopted,
+            listed: pets.data.listed,
+            adopted: pets.data.adopted,
             hours: 0,
+            donated: 0,
+            raised: donations.data.totalRaised || 0,
           });
           return;
         }
 
         const mine = await rescueService.getMine();
+
         let rescued = 0;
         if (isVolunteer) {
           const assigned = await rescueService.getAssigned();
@@ -88,15 +104,25 @@ export default function DashboardSidebar() {
           hours = 0;
         }
 
+        let donated = 0;
+        try {
+          const donations = await donationService.getMine();
+          donated = donations.data.total;
+        } catch {
+          donated = 0;
+        }
+
         setImpact({
           reported: mine.data.rescues.length,
           rescued,
           listed: 0,
           adopted: 0,
           hours,
+          donated,
+          raised: 0,
         });
       } catch {
-        setImpact({ reported: 0, rescued: 0, listed: 0, adopted: 0, hours: 0 });
+        setImpact({ reported: 0, rescued: 0, listed: 0, adopted: 0, hours: 0, donated: 0, raised: 0 });
       }
     };
     load();
@@ -156,6 +182,13 @@ export default function DashboardSidebar() {
 
       <div className="px-3 py-4 border-t border-gray-100 space-y-1 shrink-0">
         <Link
+          to="/"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50"
+        >
+          <Home size={18} />
+          Back to Site
+        </Link>
+        <Link
           to="/dashboard/settings"
           className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50"
         >
@@ -184,6 +217,10 @@ export default function DashboardSidebar() {
                 <span className="text-white/80">Pets adopted</span>
                 <span className="font-bold">{impact.adopted}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-white/80">Funds raised</span>
+                <span className="font-bold">{formatNPR(impact.raised)}</span>
+              </div>
             </>
           ) : (
             <>
@@ -201,12 +238,12 @@ export default function DashboardSidebar() {
                 <span className="text-white/80">Volunteer hrs</span>
                 <span className="font-bold">{impact.hours}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-white/80">Donated</span>
+                <span className="font-bold">{formatNPR(impact.donated)}</span>
+              </div>
             </>
           )}
-          <div className="flex justify-between">
-            <span className="text-white/80">Donated</span>
-            <span className="font-bold">NPR 0</span>
-          </div>
         </div>
       </div>
     </>
@@ -218,7 +255,7 @@ export default function DashboardSidebar() {
         <button onClick={function () { setOpen(true); }} className="text-ink" aria-label="Open menu">
           <Menu size={26} />
         </button>
-        <Link to="/dashboard" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img src="/logo.png" alt="PaluwaSathi" className="h-8 w-auto" />
           <span className="text-base font-black text-ink">PaluwaSathi</span>
         </Link>

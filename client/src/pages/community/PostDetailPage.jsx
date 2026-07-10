@@ -247,7 +247,7 @@ export default function PostDetailPage() {
             {comments.length} comment{comments.length !== 1 ? 's' : ''}
           </h2>
 
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <div className="flex gap-3 mb-6">
               <span className="w-10 h-10 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shrink-0">
                 {user.name.split(' ').map(function (n) { return n[0]; }).slice(0, 2).join('').toUpperCase()}
