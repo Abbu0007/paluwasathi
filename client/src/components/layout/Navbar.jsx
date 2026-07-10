@@ -103,6 +103,8 @@ export default function Navbar() {
     ? user.name.split(' ').map(function (n) { return n[0]; }).slice(0, 2).join('').toUpperCase()
     : 'U';
 
+  const photoUrl = user && user.profilePhoto ? user.profilePhoto.url : null;
+
   const moreBtnClass = (moreOpen || isMoreActive)
     ? 'flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-bold text-primary-dark bg-primary-50 transition-colors'
     : 'flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-bold text-gray-600 hover:text-ink hover:bg-gray-50 transition-colors';
@@ -194,9 +196,13 @@ export default function Navbar() {
                   onClick={function () { setUserMenuOpen(!userMenuOpen); }}
                   className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-gray-50 transition-colors"
                 >
-                  <span className="w-9 h-9 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">
-                    {initials}
-                  </span>
+                  {photoUrl ? (
+                    <img src={photoUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+                  ) : (
+                    <span className="w-9 h-9 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">
+                      {initials}
+                    </span>
+                  )}
                   <ChevronDown size={15} className="text-gray-400" />
                 </button>
 
@@ -278,9 +284,13 @@ export default function Navbar() {
             to="/dashboard"
             className="flex items-center gap-3 mx-3 mt-3 p-3 bg-gray-50 rounded-xl shrink-0"
           >
-            <span className="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center shrink-0">
-              {initials}
-            </span>
+            {photoUrl ? (
+              <img src={photoUrl} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
+            ) : (
+              <span className="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center shrink-0">
+                {initials}
+              </span>
+            )}
             <div className="min-w-0">
               <p className="font-bold text-ink text-sm truncate">{user.name}</p>
               <p className="text-xs text-gray-500">View dashboard</p>

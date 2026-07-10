@@ -8,7 +8,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Use memory storage — we'll upload to Cloudinary manually in the controller
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
@@ -39,4 +38,4 @@ exports.uploadProfilePhoto = multer({
   storage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
-}).single('photo');
+}).array('photos', 1);

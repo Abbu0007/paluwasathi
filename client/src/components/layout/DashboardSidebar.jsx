@@ -125,8 +125,8 @@ export default function DashboardSidebar() {
         setImpact({ reported: 0, rescued: 0, listed: 0, adopted: 0, hours: 0, donated: 0, raised: 0 });
       }
     };
-    load();
-  }, [isVolunteer, isNGO]);
+    if (user) load();
+  }, [isVolunteer, isNGO, user]);
 
   const handleLogout = () => {
     logout();
@@ -136,6 +136,8 @@ export default function DashboardSidebar() {
   const initials = user && user.name
     ? user.name.split(' ').map(function (n) { return n[0]; }).slice(0, 2).join('').toUpperCase()
     : 'U';
+
+  const photoUrl = user && user.profilePhoto ? user.profilePhoto.url : null;
 
   const asideClass = open
     ? 'w-[280px] lg:w-[260px] bg-white border-r border-gray-100 h-screen flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 translate-x-0'
@@ -154,9 +156,13 @@ export default function DashboardSidebar() {
       </div>
 
       <div className="lg:hidden flex items-center gap-3 mx-3 mt-3 p-3 bg-gray-50 rounded-xl shrink-0">
-        <span className="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center shrink-0">
-          {initials}
-        </span>
+        {photoUrl ? (
+          <img src={photoUrl} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
+        ) : (
+          <span className="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center shrink-0">
+            {initials}
+          </span>
+        )}
         <div className="min-w-0">
           <p className="font-bold text-ink text-sm truncate">{user && user.name}</p>
           <p className="text-xs text-gray-500 capitalize">{user && user.role}</p>
@@ -259,9 +265,13 @@ export default function DashboardSidebar() {
           <img src="/logo.png" alt="PaluwaSathi" className="h-8 w-auto" />
           <span className="text-base font-black text-ink">PaluwaSathi</span>
         </Link>
-        <span className="w-9 h-9 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">
-          {initials}
-        </span>
+        {photoUrl ? (
+          <img src={photoUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+        ) : (
+          <span className="w-9 h-9 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">
+            {initials}
+          </span>
+        )}
       </div>
 
       {open && (

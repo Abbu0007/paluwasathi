@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { NEPAL_DISTRICTS } from '../../constants/nepal-districts';
-import api from '../../services/api';
+import { authService } from '../../services/auth.service';
 
 const ROLES = [
   { value: 'volunteer', label: 'Volunteer' },
@@ -45,7 +45,7 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/register', {
+      const res = await authService.register({
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -53,13 +53,12 @@ export default function SignupPage() {
         password: form.password,
         role: form.role,
       });
-      // DEV: pass devOtp through so OTP page can auto-fill
+
       navigate('/verify-otp', {
-        state: { userId: data.userId, phone: form.phone, devOtp: data.devOtp },
+        state: { userId: res.data.userId, email: res.data.email },
       });
     } catch (err) {
       setServerError(err.response?.data?.message || 'Registration failed. Try again.');
-    } finally {
       setLoading(false);
     }
   };

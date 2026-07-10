@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import OTPPage from './pages/auth/OTPPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 import DashboardPage from './pages/DashboardPage';
 import MyRescuesPage from './pages/dashboard/MyRescuesPage';
@@ -97,11 +99,8 @@ function App() {
 
           <Route path="/emergency" element={<EmergencyPage />} />
           <Route path="/about" element={<AboutPage />} />
-
-          <Route path="/forgot-password" element={
-            <ComingSoonPage title="Reset Password"
-              description="Password reset via email is coming soon." />
-          } />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/adopt/:id/apply" element={<AdoptionFormPage />} />

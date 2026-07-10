@@ -4,11 +4,13 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 
 dotenv.config();
+const { verifyConnection } = require('./utils/email');
 
 require('./config/cloudinary');
 
 const connectDB = require('./config/db');
 connectDB();
+verifyConnection();
 
 const app = express();
 
@@ -36,6 +38,7 @@ app.use('/api/lostfound', require('./routes/lostfound.routes'));
 app.use('/api/community', require('./routes/community.routes'));
 app.use('/api/events', require('./routes/event.routes'));
 app.use('/api/rsvps',  require('./routes/rsvp.routes'));
+app.use('/api/users', require('./routes/user.routes'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
