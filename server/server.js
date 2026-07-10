@@ -39,6 +39,7 @@ app.use('/api/community', require('./routes/community.routes'));
 app.use('/api/events', require('./routes/event.routes'));
 app.use('/api/rsvps',  require('./routes/rsvp.routes'));
 app.use('/api/users', require('./routes/user.routes'));
+app.use('/api/admin', require('./routes/admin.routes'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
