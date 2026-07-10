@@ -44,6 +44,11 @@ import ReportLostFoundPage from './pages/lostfound/ReportLostFoundPage';
 import LostFoundDetailPage from './pages/lostfound/LostFoundDetailPage';
 import MyLostFoundPage from './pages/dashboard/MyLostFoundPage';
 
+import CommunityPage from './pages/community/CommunityPage';
+import PostDetailPage from './pages/community/PostDetailPage';
+import CreatePostPage from './pages/community/CreatePostPage';
+import MyPostsPage from './pages/dashboard/MyPostsPage';
+
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -74,10 +79,9 @@ function App() {
           <Route path="/lost-found" element={<LostFoundListPage />} />
           <Route path="/lost-found/:id" element={<LostFoundDetailPage />} />
 
-          <Route path="/community" element={
-            <ComingSoonPage title="Community"
-              description="Share rescue stories, updates and connect with other animal lovers." />
-          } />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/community/:id" element={<PostDetailPage />} />
+
           <Route path="/emergency" element={
             <ComingSoonPage title="Emergency Contacts"
               description="Quick access to vets and rescue NGOs. For now, report a rescue to get help." />
@@ -118,6 +122,8 @@ function App() {
             <Route path="/dashboard/tasks" element={<NgoTasksPage />} />
             <Route path="/lost-found/report" element={<ReportLostFoundPage />} />
             <Route path="/dashboard/lost-found" element={<MyLostFoundPage />} />
+            <Route path="/community/new" element={<CreatePostPage />} />
+            <Route path="/dashboard/community" element={<MyPostsPage />} />
 
             <Route path="/dashboard/lost-found" element={
               <ComingSoonPage title="My Lost & Found Reports"
@@ -126,10 +132,6 @@ function App() {
             <Route path="/dashboard/events" element={
               <ComingSoonPage title="My Events"
                 description="Events you're attending will appear here." />
-            } />
-            <Route path="/dashboard/community" element={
-              <ComingSoonPage title="My Posts"
-                description="Stories and updates you've shared will appear here." />
             } />
           </Route>
 
