@@ -26,9 +26,9 @@ const NGO_NAV = [
   { label: 'My Pets', path: '/dashboard/my-pets', Icon: PawPrint },
   { label: 'Campaigns', path: '/dashboard/campaigns', Icon: HandCoins },
   { label: 'Opportunities', path: '/dashboard/tasks', Icon: Users },
+  { label: 'Events', path: '/dashboard/ngo-events', Icon: Calendar },
   { label: 'Donations', path: '/dashboard/donations', Icon: Receipt },
   { label: 'My Rescues', path: '/dashboard/rescues', Icon: Siren },
-  { label: 'Events', path: '/dashboard/events', Icon: Calendar },
 ];
 
 export default function DashboardSidebar() {

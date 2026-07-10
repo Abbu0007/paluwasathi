@@ -49,6 +49,13 @@ import PostDetailPage from './pages/community/PostDetailPage';
 import CreatePostPage from './pages/community/CreatePostPage';
 import MyPostsPage from './pages/dashboard/MyPostsPage';
 
+import EventsPage from './pages/events/EventsPage';
+import EventDetailPage from './pages/events/EventDetailPage';
+import EventRsvpPage from './pages/events/EventsRsvpPage';
+import EventTicketPage from './pages/events/EventTicketPage';
+import MyEventsPage from './pages/dashboard/MyEventsPage';
+import NgoEventsPage from './pages/dashboard/NgoEventsPage';
+
 import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -82,6 +89,9 @@ function App() {
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/community/:id" element={<PostDetailPage />} />
 
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/events/:id" element={<EventDetailPage />} />
+
           <Route path="/emergency" element={
             <ComingSoonPage title="Emergency Contacts"
               description="Quick access to vets and rescue NGOs. For now, report a rescue to get help." />
@@ -89,10 +99,6 @@ function App() {
           <Route path="/about" element={
             <ComingSoonPage title="About PaluwaSathi"
               description="Learn about our mission and animal welfare guides." />
-          } />
-          <Route path="/events" element={
-            <ComingSoonPage title="Events & News"
-              description="Upcoming adoption fairs, rescue drives and awareness events." />
           } />
           <Route path="/forgot-password" element={
             <ComingSoonPage title="Reset Password"
@@ -125,13 +131,14 @@ function App() {
             <Route path="/community/new" element={<CreatePostPage />} />
             <Route path="/dashboard/community" element={<MyPostsPage />} />
 
+            <Route path="/events/:id/rsvp" element={<EventRsvpPage />} />
+            <Route path="/events/ticket/:id" element={<EventTicketPage />} />
+            <Route path="/dashboard/events" element={<MyEventsPage />} />
+            <Route path="/dashboard/ngo-events" element={<NgoEventsPage />} />
+
             <Route path="/dashboard/lost-found" element={
               <ComingSoonPage title="My Lost & Found Reports"
                 description="Pets you've reported lost or found will appear here." />
-            } />
-            <Route path="/dashboard/events" element={
-              <ComingSoonPage title="My Events"
-                description="Events you're attending will appear here." />
             } />
           </Route>
 
