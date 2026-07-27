@@ -137,14 +137,6 @@ export default function AdminSidebar() {
         </nav>
 
         <div className="px-3 py-4 border-t border-white/10 space-y-1 shrink-0">
-          <Link to="/" className={linkClass(false)}>
-            <Home size={17} />
-            Back to Site
-          </Link>
-          <Link to="/dashboard" className={linkClass(false)}>
-            <LayoutDashboard size={17} />
-            My Dashboard
-          </Link>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors"

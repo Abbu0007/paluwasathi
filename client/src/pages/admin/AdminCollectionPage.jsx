@@ -118,7 +118,7 @@ const CONFIG = {
     link: function (d) { return '/events/' + d._id; },
     columns: [
       { label: 'Title', get: function (d) { return d.title; }, bold: true },
-      { label: 'Category', get: function (d) { return d.category.replace('_', ' '); }, capitalize: true },
+      { label: 'Category', get: function (d) { return d.category ? d.category.replace('_', ' ') : '—'; }, capitalize: true },
       { label: 'Organiser', get: function (d) { return nameOf(d.organiser); } },
       { label: 'Attendees', get: function (d) { return d.attendeeCount; } },
       { label: 'Starts', get: function (d) { return formatDate(d.startDate); } },
